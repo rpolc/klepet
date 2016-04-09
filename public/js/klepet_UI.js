@@ -99,7 +99,20 @@ $(document).ready(function() {
     for (var i=0; i < uporabniki.length; i++) {
       $('#seznam-uporabnikov').append(divElementEnostavniTekst(uporabniki[i]));
     }
+    
+    $('#seznam-uporabnikov div').click(function() {
+      klepetApp.procesirajUkaz('/zasebno ' + $(this).text());
+      $('#poslji-sporocilo').focus();
+      $('#poslji-sporocilo').val('/zasebno "'+$(this).text()+'" ');
+    });
   });
+  
+  $('#seznam-uporabnikov div').click(function() {
+      klepetApp.procesirajUkaz('/zasebno ' + $(this).text());
+      $('#poslji-sporocilo').focus();
+      $('#poslji-sporocilo').val('/zasebno "'+$(this).text()+'" ');
+      
+    });
 
   setInterval(function() {
     socket.emit('kanali');
