@@ -4,10 +4,10 @@ function divElementEnostavniTekst(sporocilo) {
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } 
-  var video = sporocilo.indexOf("https://youtube.com/watch") > -1;
+/*var video = sporocilo.indexOf("https://youtube.com/watch") > -1;
   if(video){
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
-  }
+  }*/
   else {
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
   }
@@ -19,7 +19,6 @@ function divElementHtmlTekst(sporocilo) {
 
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
-  //sporocilo = dodajVideo(sporocilo);
   sporocilo = dodajSmeske(sporocilo);
   var sistemskoSporocilo;
 
@@ -29,9 +28,10 @@ function procesirajVnosUporabnika(klepetApp, socket) {
       $('#sporocila').append(divElementHtmlTekst(sistemskoSporocilo));
     }
   } else {
+    var posnetek = dodajVideo(sporocilo);
     sporocilo = filtirirajVulgarneBesede(sporocilo);
     klepetApp.posljiSporocilo(trenutniKanal, sporocilo);
-    $('#sporocila').append(divElementEnostavniTekst(sporocilo));
+    $('#sporocila').append(divElementEnostavniTekst(sporocilo)).append(posnetek);
     $('#sporocila').scrollTop($('#sporocila').prop('scrollHeight'));
   }
 
@@ -139,14 +139,16 @@ function dodajSmeske(vhodnoBesedilo) {
 }
 
 function dodajVideo(vhodnoBesedilo) {
-  /*var jeVideo=vhodnoBesedilo.indexOf('https://www.youtube.com/watch') > -1;
-  if(jeVideo){
-    var zacetek = 0;
-    for(var i=0; i<vhodnoBesedilo.match(/https:\/\/www.youtube.com\/watch/ig).length; i++){
-      var videoLink =vhodnoBesedilo.substr(vhodnoBesedilo.indexOf('https://www.youtube.com/watch',zacetek), 43);
-      vhodnoBesedilo += "<br>"+"<iframe src="+videoLink+" \
+  var reglin='https:\\/\\/www\\.youtube\\.com\\/watch\\?v=';
+  var linki=vhodnoBesedilo.match(reglin+'+\\S+','gi');
+  var izhod='';
+  if(linki){
+    for(var i; i<linki.length; i++){
+      if (izhod) izhod += '<br>';
+      var pos=linki[i].replce(new RegExp(reglin,'gi'), '');
+      izhod += "<iframe src='https://www.youtube.com/embed/"+pos+"' \
       style='margin-left.20px; width.200px; height=150px' allowfullscreen></iframe>";
-      zacetek+=vhodnoBesedilo.indexOf('https://www.youtube.com/watch', zacetek+1);
     }
-  }*/
+  }
+  return izhod;
 }
