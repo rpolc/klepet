@@ -107,13 +107,6 @@ $(document).ready(function() {
     });
   });
   
-  $('#seznam-uporabnikov div').click(function() {
-      klepetApp.procesirajUkaz('/zasebno ' + $(this).text());
-      $('#poslji-sporocilo').focus();
-      $('#poslji-sporocilo').val('/zasebno "'+$(this).text()+'" ');
-      
-    });
-
   setInterval(function() {
     socket.emit('kanali');
     socket.emit('uporabniki', {kanal: trenutniKanal});
