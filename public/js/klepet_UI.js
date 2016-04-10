@@ -4,10 +4,10 @@ function divElementEnostavniTekst(sporocilo) {
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } 
-/*var video = sporocilo.indexOf("https://youtube.com/watch") > -1;
+var video = sporocilo.match(/((http(s)?:\/\/)?)(www\.)?((youtube\.com\/))/gi);
   if(video){
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
-  }*/
+  }
   else {
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
   }
@@ -19,6 +19,7 @@ function divElementHtmlTekst(sporocilo) {
 
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
+  sporocilo = dodajVideo(sporocilo);
   sporocilo = dodajSmeske(sporocilo);
   var sistemskoSporocilo;
 
@@ -28,10 +29,9 @@ function procesirajVnosUporabnika(klepetApp, socket) {
       $('#sporocila').append(divElementHtmlTekst(sistemskoSporocilo));
     }
   } else {
-    var posnetek = dodajVideo(sporocilo);
     sporocilo = filtirirajVulgarneBesede(sporocilo);
     klepetApp.posljiSporocilo(trenutniKanal, sporocilo);
-    $('#sporocila').append(divElementEnostavniTekst(sporocilo)).append(posnetek);
+    $('#sporocila').append(divElementEnostavniTekst(sporocilo));
     $('#sporocila').scrollTop($('#sporocila').prop('scrollHeight'));
   }
 
@@ -138,17 +138,14 @@ function dodajSmeske(vhodnoBesedilo) {
   return vhodnoBesedilo;
 }
 
-function dodajVideo(vhodnoBesedilo) {
-  var reglin='https:\\/\\/www\\.youtube\\.com\\/watch\\?v=';
-  var linki=vhodnoBesedilo.match(reglin+'+\\S+','gi');
-  var izhod='';
-  if(linki){
-    for(var i; i<linki.length; i++){
-      if (izhod) izhod += '<br>';
-      var pos=linki[i].replce(new RegExp(reglin,'gi'), '');
-      izhod += "<iframe src='https://www.youtube.com/embed/"+pos+"' \
-      style='margin-left.20px; width.200px; height=150px' allowfullscreen></iframe>";
+function dodajVideo(vhodnoBesedilo){
+  if (vhodnoBesedilo.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]{11,11}).*/gi )){
+    var linki = vhodnoBesedilo.match(/((http(s)?:\/\/)?)(www\.)?((youtube\.com\/)|(youtu.be\/))[\S]+/gi);
+    for (var i = 0; i < linki.length; i++){
+      linki[i] = linki[i].replace(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]{11,11}).*/gi, '$2');
+     vhodnoBesedilo = vhodnoBesedilo +"<br>"+"<iframe width='200px' height='150px' style='margin-left:20px;' \
+     src='https://www.youtube.com/embed/" + linki[i]+ "' allowfullscreen ></iframe>";
     }
   }
-  return izhod;
+  return vhodnoBesedilo;
 }
