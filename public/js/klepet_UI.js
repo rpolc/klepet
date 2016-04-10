@@ -78,7 +78,7 @@ $(document).ready(function() {
     }
     $('#sporocila').append(divElementHtmlTekst(sporocilo));
   });
-
+  
   socket.on('pridruzitevOdgovor', function(rezultat) {
     trenutniKanal = rezultat.kanal;
     $('#kanal').text(trenutniVzdevek + " @ " + trenutniKanal);
@@ -88,6 +88,14 @@ $(document).ready(function() {
   socket.on('sporocilo', function (sporocilo) {
     var novElement = divElementEnostavniTekst(sporocilo.besedilo);
     $('#sporocila').append(novElement);
+  });
+  
+  socket.on('dregljaj', function(){
+    $('#vsebina').jrumble();
+    $('#vsebina').trigger('startRumble');
+    setTimeout(function(){
+      $('#vsebina').trigger('stopRumble');
+      }, 1500);
   });
   
   socket.on('kanali', function(kanali) {
